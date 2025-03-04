@@ -1,20 +1,23 @@
 import { prisma } from '$lib/server/prisma';
+import { redirect } from '@sveltejs/kit';
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-	// 세션 쿠키를 확인합니다
 	const session = event.cookies.get('session');
 
+	// 보안이 필요한 경로 목록
+	const securedPaths = ['/community', '/study'];
+	const path = event.url.pathname;
+
+	// 세션이 있으면 사용자 정보를 가져옵니다
 	if (session) {
 		try {
-			// 데이터베이스에서 사용자를 찾습니다
 			const user = await prisma.user.findUnique({
 				where: { id: session },
 				select: { id: true, email: true, name: true }
 			});
 
 			if (user) {
-				// 사용자 정보를 locals에 저장합니다 (비밀번호는 제외)
 				event.locals.user = {
 					id: user.id,
 					email: user.email,
@@ -26,7 +29,11 @@ export async function handle({ event, resolve }) {
 		}
 	}
 
-	// 요청을 계속 처리합니다
+	// 보안된 경로에 접근하려 할 때 로그인이 필요한 경우
+	if (securedPaths.some((p) => path.startsWith(p)) && !event.locals.user) {
+		throw redirect(303, '/login');
+	}
+
 	const response = await resolve(event);
 	return response;
 }

@@ -1,7 +1,5 @@
 <script>
-	// data prop을 받아옵니다
 	export let data;
-
 	let isActive = false;
 	let currentPath = '';
 
@@ -17,7 +15,7 @@
 <nav class="navbar is-primary is-fixed-top" role="navigation" aria-label="main navigation">
 	<div class="navbar-brand">
 		<a class="navbar-item" href="/">
-			<strong>온라인 저지</strong>
+			<img src="/logo.png" alt="" />
 		</a>
 
 		<a
@@ -37,6 +35,14 @@
 		<div class="navbar-start">
 			<a class="navbar-item {currentPath === '/' ? 'is-active' : ''}" href="/"> 홈 </a>
 			<a class="navbar-item {currentPath === '/about' ? 'is-active' : ''}" href="/about"> 소개 </a>
+			{#if data?.user}
+				<a class="navbar-item {currentPath === '/community' ? 'is-active' : ''}" href="/community">
+					커뮤니티
+				</a>
+				<a class="navbar-item {currentPath === '/study' ? 'is-active' : ''}" href="/study">
+					스터디
+				</a>
+			{/if}
 		</div>
 
 		<div class="navbar-end">

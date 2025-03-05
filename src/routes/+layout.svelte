@@ -1,18 +1,59 @@
 <script>
 	import 'bulma/css/bulma.min.css';
 	import Navbar from '$lib/components/Navbar.svelte';
-
-	// 페이지 데이터를 받아옵니다
+	import Footer from '$lib/components/Footer.svelte';
 	export let data;
 </script>
 
-<!-- data를 Navbar 컴포넌트에 전달합니다 -->
-<Navbar {data} />
+<div class="site-container">
+	<Navbar {data} />
 
-<slot />
+	<main class="main-content">
+		<slot />
+	</main>
+
+	<Footer />
+</div>
 
 <style>
 	:global(body) {
+		min-height: 100vh;
+		background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
 		padding-top: 3.25rem;
+	}
+
+	.site-container {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+	}
+
+	.main-content {
+		flex: 1;
+	}
+
+	:global(.section) {
+		background: transparent;
+	}
+
+	:global(.box) {
+		background: rgba(255, 255, 255, 0.9);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+	}
+
+	:global(.navbar.is-primary) {
+		background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+	}
+
+	:global(.button.is-primary) {
+		background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+		border: none;
+		transition: transform 0.2s;
+	}
+
+	:global(.button.is-primary:hover) {
+		transform: translateY(-2px);
 	}
 </style>

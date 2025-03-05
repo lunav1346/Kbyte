@@ -1,38 +1,59 @@
-# sv
+# Kbyte - 한국항공대학교 프로그래밍 소모임
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+한국항공대학교 프로그래밍 소모임 Kbyte입니다.
 
-## Creating a project
+## 🚀 기술 스택
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **FrontEnd**: SvelteKit
+- **CSS**: Bulma
+- **Backend**: SvelteKit (서버리스)
+- **DB**: Supabase (PostgreSQL)
+- **Deploy**: Vercel
+- **Auth**: 자체 구현 (bcrypt)
+
+## ⚙️ 주요 기능
+
+- 회원가입/로그인 시스템
+- 학과별 사용자 관리
+- 커뮤니티 게시판
+- 스터디 그룹 관리
+- 반응형 디자인
+
+## 🔧 개발 환경 설정
 
 ```bash
-# create a new project in the current directory
-npx sv create
+# 저장소 복제
+git clone https://github.com/yourusername/kbyte.git
+cd kbyte
 
-# create a new project in my-app
-npx sv create my-app
-```
+# 의존성 설치
+npm install
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
+# 개발 서버 실행
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+## 🌐 환경 변수 설정
 
-To create a production version of your app:
+.env 파일에 다음을 추가해주세요.**(깃허브에 올리는 경우 반드시 .gitignore에 .env 추가해주세요)**
 
 ```bash
-npm run build
+DATABASE_URL="your-supabase-database-url"
+DIRECT_URL="your-supabase-direct-url"
+PUBLIC_SUPABASE_URL="your-supabase-project-url"
+PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
 ```
 
-You can preview the production build with `npm run preview`.
+## 📦 배포
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+이 프로젝트는 Vercel에 자동 배포되도록 설정되어 있습니다.
+
+## 📃 라이선스
+
+이 프로젝트는 MIT 라이선스에 따라 배포됩니다.
+
+## 📬 지원 및 문의
+
+- 이슈 트래커를 통해 버그를 제보해주세요.
+- 프로젝트 개선을 위한 제안도 환영합니다.
+- 기타 문의는 lunav1346@kau.kr로 부탁드립니다.

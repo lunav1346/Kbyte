@@ -9,9 +9,11 @@ export const actions = {
 		const email = formData.get('email');
 		const password = formData.get('password');
 		const name = formData.get('name');
+		const dept = formData.get('dept'); // 추가
+		const studentNumber = formData.get('studentNumber'); // 추가
 
 		// 필수 입력값 검증
-		if (!email || !password || !name) {
+		if (!email || !password || !name || !dept || !studentNumber) {
 			return fail(400, { message: '모든 필드를 입력해주세요.' });
 		}
 
@@ -33,7 +35,9 @@ export const actions = {
 				data: {
 					email: email.toString(),
 					password: hashedPassword,
-					name: name.toString()
+					name: name.toString(),
+					dept: dept.toString(), // 추가
+					studentNumber: studentNumber.toString() // 추가
 				}
 			});
 

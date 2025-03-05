@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 
 export const actions = {
 	// POST 요청 처리
-	default: async ({ request }) => {
+	default: async ({ request, cookies }) => {
 		const formData = await request.formData();
 		const email = formData.get('email');
 		const password = formData.get('password');
@@ -31,7 +31,7 @@ export const actions = {
 			const hashedPassword = await bcrypt.hash(password.toString(), 10);
 
 			// 새로운 사용자 생성
-			await prisma.user.create({
+			const user = await prisma.user.create({
 				data: {
 					email: email.toString(),
 					password: hashedPassword,
@@ -39,6 +39,15 @@ export const actions = {
 					dept: dept.toString(), // 추가
 					studentNumber: studentNumber.toString() // 추가
 				}
+			});
+
+			// 회원가입 후 자동 로그인을 위한 세션 설정
+			cookies.set('session', user.id, {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'strict',
+				secure: process.env.NODE_ENV === 'production',
+				maxAge: 60 * 60 * 24 * 30 // 30일
 			});
 
 			return { success: true };

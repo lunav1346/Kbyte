@@ -8,6 +8,17 @@
 	};
 
 	let error = '';
+
+	function handleSubmit() {
+		return async ({ result }) => {
+			if (result.type === 'failure') {
+				error = result.data?.message || '로그인에 실패했습니다.';
+			} else if (result.type === 'success') {
+				await goto('/', { replaceState: true });
+				location.reload(); // 상태 갱신을 위한 새로고침
+			}
+		};
+	}
 </script>
 
 <div class="section">
@@ -23,20 +34,7 @@
 						</div>
 					{/if}
 
-					<form
-						method="POST"
-						use:enhance={() => {
-							return async ({ result }) => {
-								if (result.type === 'failure') {
-									error = result.data?.message || '로그인에 실패했습니다.';
-								} else if (result.type === 'success') {
-									// 로그인 성공 시 홈페이지로 이동
-									await goto('/', { replaceState: true });
-									window.location.reload(); // 페이지를 새로고침하여 상태를 업데이트
-								}
-							};
-						}}
-					>
+					<form method="POST" use:enhance={handleSubmit}>
 						<!-- 나머지 폼 내용은 동일 -->
 						<div class="field">
 							<label class="label" for="email">이메일</label>

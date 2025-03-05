@@ -1,5 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 
 	// 폼 데이터를 관리하는 객체
 	let formData = {
@@ -65,6 +66,17 @@
 		'자유전공학부',
 		'인문자연학부'
 	];
+
+	function handleSubmit() {
+		return async ({ result }) => {
+			if (result.type === 'failure') {
+				errors = { form: result.data?.message || '회원가입에 실패했습니다.' };
+			} else if (result.type === 'success') {
+				await goto('/', { replaceState: true });
+				location.reload(); // 상태 갱신을 위한 새로고침
+			}
+		};
+	}
 </script>
 
 <div class="section">
@@ -78,15 +90,7 @@
 						<div class="notification is-success">회원가입이 완료되었습니다!</div>
 					{/if}
 
-					<form
-						method="POST"
-						use:enhance={() => {
-							return async ({ update }) => {
-								// 폼 제출 후 페이지 업데이트
-								await update();
-							};
-						}}
-					>
+					<form method="POST" use:enhance={handleSubmit}>
 						<!-- 이메일 입력 필드 -->
 						<div class="field">
 							<label class="label" for="email">이메일</label>
@@ -195,6 +199,10 @@
 								<button class="button is-primary is-fullwidth" type="submit"> 가입하기 </button>
 							</div>
 						</div>
+
+						{#if errors.form}
+							<div class="notification is-danger">{errors.form}</div>
+						{/if}
 					</form>
 				</div>
 			</div>

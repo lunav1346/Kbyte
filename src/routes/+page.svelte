@@ -22,11 +22,7 @@
 
 <section class="section">
 	<div class="container">
-		<h1 class="title">환영합니다!</h1>
-		<p class="subtitle">SvelteKit과 Bulma로 만든 웹사이트입니다.</p>
+		<h1 class="title">코테만 준비하기에는 너무 아까우니까.</h1>
+		<p class="subtitle">한국항공대학교 종합 프로그래밍 소모임, Kbyte</p>
 	</div>
 </section>
-
-<form method="POST" use:enhance={handleSubmit}>
-	<!-- ...existing form content... -->
-</form>

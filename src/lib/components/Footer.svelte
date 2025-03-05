@@ -1,19 +1,13 @@
 <footer class="footer">
 	<div class="content has-text-centered">
 		<p>
-			<strong>Kbyte</strong> by 한국항공대학교
-		</p>
-		<p>
+			<strong>Kbyte</strong> by lunav1346
 			<a href="https://github.com/lunav1346/Kbyte" target="_blank" rel="noopener noreferrer">
 				<span class="icon">
 					<i class="fab fa-github"></i>
 				</span>
 				GitHub
 			</a>
-			&nbsp;·&nbsp;
-			<a href="/about">About</a>
-			&nbsp;·&nbsp;
-			<a href="/contact">Contact</a>
 		</p>
 	</div>
 </footer>

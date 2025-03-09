@@ -1,6 +1,7 @@
 <script>
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import { supabase } from '$lib/supabaseClient';
 
 	// 폼 데이터를 관리하는 객체
 	let formData = {
@@ -15,6 +16,9 @@
 	// 에러와 성공 상태를 관리하는 변수들
 	let errors = {};
 	let success = false;
+	let studentIdFile;
+	let uploading = false;
+	let selectedFile = null; // 선택된 파일을 저장할 변수 추가
 
 	// 폼 유효성 검사 함수
 	function validateForm() {
@@ -67,13 +71,107 @@
 		'인문자연학부'
 	];
 
+	async function handleFileUpload(event) {
+		const file = event.target.files[0];
+		if (!file) return;
+
+		try {
+			uploading = true;
+			const fileExt = file.name.split('.').pop();
+			// UUID를 사용하여 더 안전한 파일명 생성
+			const fileName = `${crypto.randomUUID()}.${fileExt}`;
+			const filePath = `student-ids/${fileName}`;
+
+			const { error: uploadError } = await supabase.storage
+				.from('student-ids')
+				.upload(filePath, file, {
+					cacheControl: '0',
+					upsert: false
+				});
+
+			if (uploadError) {
+				throw uploadError;
+			}
+
+			studentIdFile = filePath;
+		} catch (error) {
+			console.error('Error uploading file:', error);
+			errors = { ...errors, studentId: '파일 업로드에 실패했습니다.' };
+		} finally {
+			uploading = false;
+		}
+	}
+
+	// 파일 선택 핸들러 수정
+	function handleFileSelect(event) {
+		selectedFile = event.target.files[0];
+	}
+
+	// handleSubmit 함수를 다음과 같이 수정
 	function handleSubmit() {
-		return async ({ result }) => {
-			if (result.type === 'failure') {
-				errors = { form: result.data?.message || '회원가입에 실패했습니다.' };
-			} else if (result.type === 'success') {
-				await goto('/', { replaceState: true });
-				location.reload(); // 상태 갱신을 위한 새로고침
+		return async ({ cancel }) => {
+			// form, action 파라미터 제거
+			if (!validateForm()) {
+				cancel();
+				return;
+			}
+
+			if (!selectedFile) {
+				errors = { ...errors, studentId: '학생증 사진을 업로드해주세요.' };
+				cancel();
+				return;
+			}
+
+			try {
+				uploading = true;
+
+				// 1. 파일 업로드
+				const fileExt = selectedFile.name.split('.').pop();
+				const fileName = `${crypto.randomUUID()}.${fileExt}`;
+				const filePath = `student-ids/${fileName}`;
+
+				const { data, error: uploadError } = await supabase.storage
+					.from('student-ids')
+					.upload(filePath, selectedFile);
+
+				if (uploadError) {
+					console.error('파일 업로드 에러:', uploadError);
+					errors = { form: '파일 업로드에 실패했습니다.' };
+					cancel();
+					return;
+				}
+
+				// 2. 폼 데이터 전송
+				const formDataToSubmit = new FormData();
+				formDataToSubmit.append('email', formData.email);
+				formDataToSubmit.append('password', formData.password);
+				formDataToSubmit.append('name', formData.name);
+				formDataToSubmit.append('dept', formData.dept);
+				formDataToSubmit.append('studentNumber', formData.studentNumber);
+				formDataToSubmit.append('studentIdImage', filePath);
+
+				// fetch URL을 명시적으로 지정
+				const response = await fetch('/signup', {
+					method: 'POST',
+					body: formDataToSubmit
+				});
+
+				const result = await response.json();
+				console.log('서버 응답:', result);
+
+				if (!response.ok) {
+					errors = { form: result.message || '회원가입에 실패했습니다.' };
+					return;
+				}
+
+				// 성공 시
+				success = true;
+				await goto('/login');
+			} catch (error) {
+				console.error('Error:', error);
+				errors = { form: '처리 중 오류가 발생했습니다.' };
+			} finally {
+				uploading = false;
 			}
 		};
 	}
@@ -87,10 +185,20 @@
 					<h1 class="title has-text-centered">회원가입</h1>
 
 					{#if success}
-						<div class="notification is-success">회원가입이 완료되었습니다!</div>
+						<div class="notification is-success has-text-centered">
+							<p class="title is-5">회원가입이 완료되었습니다!</p>
+							<p>관리자의 승인 후 로그인이 가능합니다.</p>
+							<p class="is-size-7 mt-2">잠시 후 로그인 페이지로 이동합니다</p>
+							<a href="/login">바로 이동하려면 클릭해주세요</a>
+						</div>
 					{/if}
 
-					<form method="POST" use:enhance={handleSubmit}>
+					<form
+						method="POST"
+						action="/signup"
+						use:enhance={handleSubmit}
+						enctype="multipart/form-data"
+					>
 						<!-- 이메일 입력 필드 -->
 						<div class="field">
 							<label class="label" for="email">이메일</label>
@@ -193,15 +301,54 @@
 							{/if}
 						</div>
 
+						<!-- 학생증 업로드 필드 수정 -->
+						<div class="field">
+							<label class="label" for="studentId">학생증 사진</label>
+							<div class="file has-name is-fullwidth">
+								<label class="file-label">
+									<input
+										class="file-input"
+										type="file"
+										name="studentId"
+										accept="image/*"
+										on:change={handleFileSelect}
+									/>
+									<span class="file-cta">
+										<span class="file-icon">
+											<i class="fas fa-upload"></i>
+										</span>
+										<span class="file-label"> 파일 선택... </span>
+									</span>
+									<span class="file-name">
+										{selectedFile ? selectedFile.name : '선택된 파일 없음'}
+									</span>
+								</label>
+							</div>
+							{#if uploading}
+								<progress class="progress is-small is-primary mt-2" max="100">15%</progress>
+							{/if}
+							{#if errors.studentId}
+								<p class="help is-danger">{errors.studentId}</p>
+							{/if}
+						</div>
+
 						<!-- 제출 버튼 -->
 						<div class="field">
 							<div class="control">
-								<button class="button is-primary is-fullwidth" type="submit"> 가입하기 </button>
+								<button class="button is-primary is-fullwidth" type="submit" disabled={uploading}>
+									{uploading ? '처리중...' : '가입하기'}
+								</button>
 							</div>
 						</div>
 
 						{#if errors.form}
 							<div class="notification is-danger">{errors.form}</div>
+						{/if}
+
+						{#if success}
+							<div class="notification is-success">
+								회원가입이 완료되었습니다! 관리자 승인 후 로그인이 가능합니다.
+							</div>
 						{/if}
 					</form>
 				</div>

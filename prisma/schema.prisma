@@ -10,12 +10,13 @@ datasource db {
 
 // 사용자 정보를 저장하는 모델
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  dept      String
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  name          String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  dept          String
   studentNumber String
+  isValid       Boolean  @default(false)  // 추가된 필드
 }

@@ -27,6 +27,13 @@ export const actions = {
 				return fail(400, { message: '이메일 또는 비밀번호가 일치하지 않습니다.' });
 			}
 
+			// 계정 인증 상태 확인
+			if (!user.isValid) {
+				return fail(403, {
+					message: '계정이 아직 인증되지 않았습니다. 관리자의 승인을 기다려주세요.'
+				});
+			}
+
 			// 세션 쿠키를 설정합니다
 			cookies.set('session', user.id, {
 				path: '/',

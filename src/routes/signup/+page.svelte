@@ -109,69 +109,15 @@
 
 	// handleSubmit 함수를 다음과 같이 수정
 	function handleSubmit() {
-		return async ({ cancel }) => {
-			// form, action 파라미터 제거
-			if (!validateForm()) {
-				cancel();
+		return async ({ result }) => {
+			if (result.type === 'failure') {
+				errors = { form: result.data?.message || '회원가입에 실패했습니다.' };
 				return;
 			}
 
-			if (!selectedFile) {
-				errors = { ...errors, studentId: '학생증 사진을 업로드해주세요.' };
-				cancel();
-				return;
-			}
-
-			try {
-				uploading = true;
-
-				// 1. 파일 업로드
-				const fileExt = selectedFile.name.split('.').pop();
-				const fileName = `${crypto.randomUUID()}.${fileExt}`;
-				const filePath = `student-ids/${fileName}`;
-
-				const { data, error: uploadError } = await supabase.storage
-					.from('student-ids')
-					.upload(filePath, selectedFile);
-
-				if (uploadError) {
-					console.error('파일 업로드 에러:', uploadError);
-					errors = { form: '파일 업로드에 실패했습니다.' };
-					cancel();
-					return;
-				}
-
-				// 2. 폼 데이터 전송
-				const formDataToSubmit = new FormData();
-				formDataToSubmit.append('email', formData.email);
-				formDataToSubmit.append('password', formData.password);
-				formDataToSubmit.append('name', formData.name);
-				formDataToSubmit.append('dept', formData.dept);
-				formDataToSubmit.append('studentNumber', formData.studentNumber);
-				formDataToSubmit.append('studentIdImage', filePath);
-
-				// fetch URL을 명시적으로 지정
-				const response = await fetch('/signup', {
-					method: 'POST',
-					body: formDataToSubmit
-				});
-
-				const result = await response.json();
-				console.log('서버 응답:', result);
-
-				if (!response.ok) {
-					errors = { form: result.message || '회원가입에 실패했습니다.' };
-					return;
-				}
-
-				// 성공 시
+			if (result.type === 'success') {
 				success = true;
 				await goto('/login');
-			} catch (error) {
-				console.error('Error:', error);
-				errors = { form: '처리 중 오류가 발생했습니다.' };
-			} finally {
-				uploading = false;
 			}
 		};
 	}

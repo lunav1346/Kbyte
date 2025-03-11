@@ -75,6 +75,8 @@
 		const file = event.target.files[0];
 		if (!file) return;
 
+		selectedFile = file; // 선택된 파일 정보 업데이트
+
 		try {
 			uploading = true;
 			const fileExt = file.name.split('.').pop();
@@ -102,14 +104,14 @@
 		}
 	}
 
-	// 파일 선택 핸들러 수정
-	function handleFileSelect(event) {
-		selectedFile = event.target.files[0];
-	}
-
 	// handleSubmit 함수를 다음과 같이 수정
 	function handleSubmit() {
 		return async ({ result }) => {
+			if (!studentIdFile) {
+				errors = { ...errors, studentId: '학생증 사진을 업로드해주세요.' };
+				return;
+			}
+
 			if (result.type === 'failure') {
 				errors = { form: result.data?.message || '회원가입에 실패했습니다.' };
 				return;
@@ -257,7 +259,7 @@
 										type="file"
 										name="studentId"
 										accept="image/*"
-										on:change={handleFileSelect}
+										on:change={handleFileUpload}
 									/>
 									<span class="file-cta">
 										<span class="file-icon">

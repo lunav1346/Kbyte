@@ -25,6 +25,7 @@ export const actions = {
 					name: formDataObj.name,
 					dept: formDataObj.dept,
 					studentNumber: formDataObj.studentNumber,
+					// studentIdImage: formDataObj.studentId, // 학생증 이미지 경로 저장
 					isValid: false
 				}
 			});

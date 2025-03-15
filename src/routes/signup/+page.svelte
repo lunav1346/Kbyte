@@ -129,6 +129,19 @@
 	<div class="container">
 		<div class="columns is-centered">
 			<div class="column is-half">
+				<p class="has-text-centered">
+					회원가입 이후 관리자의 승인이 필요합니다.<br />승인 이후 이메일을 보내드리며, 디스코드
+					초대 메일을 보내드립니다.
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="section">
+	<div class="container">
+		<div class="columns is-centered">
+			<div class="column is-half">
 				<div class="box">
 					<h1 class="title has-text-centered">회원가입</h1>
 

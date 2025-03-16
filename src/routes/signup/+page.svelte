@@ -104,7 +104,6 @@
 		}
 	}
 
-	// handleSubmit 함수를 다음과 같이 수정
 	function handleSubmit() {
 		return async ({ result }) => {
 			if (!studentIdFile) {

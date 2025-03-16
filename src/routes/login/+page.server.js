@@ -34,7 +34,7 @@ export const actions = {
 				});
 			}
 
-			// 세션 쿠키를 설정합니다
+			// 세션 쿠키를 설정
 			cookies.set('session', user.id, {
 				path: '/',
 				httpOnly: true,
@@ -43,7 +43,7 @@ export const actions = {
 				maxAge: 60 * 60 * 24 * 30 // 30일
 			});
 
-			// 여기서 직접 리다이렉트합니다
+			// 리다이렉트
 			return { success: true };
 		} catch (error) {
 			console.error('로그인 오류:', error);

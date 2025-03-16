@@ -9,7 +9,7 @@ export async function handle({ event, resolve }) {
 	const securedPaths = ['/community', '/study'];
 	const path = event.url.pathname;
 
-	// 세션이 있으면 사용자 정보를 가져옵니다
+	// 세션이 있으면 사용자 정보를 가져오기
 	if (session) {
 		try {
 			const user = await prisma.user.findUnique({
